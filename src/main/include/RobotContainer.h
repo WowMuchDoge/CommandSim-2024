@@ -9,6 +9,7 @@
 #include <frc/smartdashboard/Field2d.h>
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc/Joystick.h>
+#include <frc2/command/button/Trigger.h>
 
 #include "Constants.h"
 #include "subsystems/ExampleSubsystem.h"
@@ -27,14 +28,13 @@ class RobotContainer {
 
   frc2::CommandPtr GetAutonomousCommand();
 
-
  private:
   // Replace with CommandPS4Controller or CommandJoystick if needed
   frc::Joystick m_controller{0};
   // The robot's subsystems are defined here...
   ExampleSubsystem m_subsystem;
 
-  DriveSubsystem m_drive;
+  DriveSubsystem m_drive{m_controller.GetY()};
 
   void ConfigureBindings();
 };

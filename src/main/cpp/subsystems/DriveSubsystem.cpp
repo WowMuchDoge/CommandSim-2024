@@ -3,20 +3,16 @@
 #include <frc/motorcontrol/PWMSparkMax.h>
 #include <frc/RobotController.h>
 #include <math.h>
+#include <frc/smartdashboard/SmartDashboard.h>
 
 #include "../../include/subsystems/DriveSubsystem.h"
-
-DriveSubsystem::DriveSubsystem() {
-    m_leftEncoder.SetDistancePerPulse(2 * 3.14159265358979323846 * 6 / 100 );
-    m_rightEncoder.SetDistancePerPulse(2 * 3.14159265358979323846 * 6 / 100);
-
-    frc::SmartDashboard::PutData("Field", &m_field);
-}
 
 void DriveSubsystem::Periodic() {
     m_odometry.Update(m_gyro.GetRotation2d(), units::meter_t(m_leftEncoder.GetDistance()), 
                                               units::meter_t(m_rightEncoder.GetDistance()));
     m_field.SetRobotPose(m_odometry.GetPose());
+
+    frc::SmartDashboard::PutNumber("Controller: ", controller);
 }
 
 void DriveSubsystem::SimulationPeriodic() {

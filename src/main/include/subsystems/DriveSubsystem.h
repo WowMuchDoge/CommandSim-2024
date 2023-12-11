@@ -14,10 +14,16 @@
 #include <frc/kinematics/DifferentialDriveOdometry.h>
 #include <frc/kinematics/DifferentialDriveOdometry.h>
 #include <frc/drive/DifferentialDrive.h>
+#include <frc/system/plant/LinearSystemId.h>
 
 class DriveSubsystem : public frc2::SubsystemBase {
     public:
-        DriveSubsystem();
+        DriveSubsystem(double controller) : controller{controller} {
+            m_leftEncoder.SetDistancePerPulse(2 * 3.14159265358979323846 * 6 / 100 );
+            m_rightEncoder.SetDistancePerPulse(2 * 3.14159265358979323846 * 6 / 100);
+
+            frc::SmartDashboard::PutData("Field", &m_field);
+        };
 
         void SimulationPeriodic() override;
 
@@ -54,10 +60,17 @@ class DriveSubsystem : public frc2::SubsystemBase {
             m_gyro.GetRotation2d(),
             units::meter_t{m_leftEncoder.GetDistance()},
             units::meter_t{m_rightEncoder.GetDistance()},
-            frc::Pose2d{5_m, 13.5_m, 0_rad}
         };
 
         frc::Field2d m_field;
 
         frc::DifferentialDrive m_drive{m_leftLeadMotor, m_rightLeadMotor};
+
+        frc::LinearSystem<2, 2, 2> m_drivetrainSystem =
+            frc::LinearSystemId::IdentifyDrivetrainSystem(
+                1.98_V / 1_mps, 0.2_V / 1_mps_sq, 1.5_V / 1_mps, 0.3_V / 1_mps_sq);
+        frc::sim::DifferentialDrivetrainSim m_drivetrainSimulator{
+        m_drivetrainSystem, 1_in, frc::DCMotor::CIM(2), 8, 2_in};
+
+        double controller;
 };
